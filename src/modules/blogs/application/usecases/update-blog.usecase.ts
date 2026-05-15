@@ -2,6 +2,11 @@ import { Types } from 'mongoose';
 import { UpdateBlogInputDto } from '../../api/input-dto/update-blog.input-dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
+import { ResultStatus } from '../../../../core/types/result-code';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 export class UpdateBlogCommand {
   constructor(
@@ -18,10 +23,19 @@ export class UpdateBlogUseCase implements ICommandHandler<
   constructor(private blogsRepository: BlogsRepository) {}
 
   async execute({ id, dto }: UpdateBlogCommand): Promise<void> {
-    const entity = await this.blogsRepository.findOrNotFoundFail(id);
+    const entity = await this.blogsRepository.findUserById(id);
 
-    entity.updateOne(dto);
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
 
-    await this.blogsRepository.save(entity);
+    if (entity.status === ResultStatus.Success) {
+      const userEntity = entity.data;
+      userEntity.updateOne(dto);
+
+      await this.blogsRepository.save(userEntity);
+    }
+
+    throw new InternalServerErrorException();
   }
 }

@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -35,6 +37,7 @@ export class BlogsController {
   }
 
   @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Body() dto: UpdateBlogInputDto,
     @Param('id') id: Types.ObjectId,
@@ -43,7 +46,7 @@ export class BlogsController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: Types.ObjectId) {
+  async delete(@Param('id') id: Types.ObjectId): Promise<void> {
     return this.commandBus.execute(new DeleteBlogCommand(id));
   }
 }

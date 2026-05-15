@@ -6,6 +6,8 @@ import {
   Blogs,
   BlogsDocument,
 } from '../domain/blogs.entity';
+import { Result } from '../../../core/types/result';
+import { ResultStatus } from '../../../core/types/result-code';
 
 @Injectable()
 export class BlogsRepository {
@@ -17,15 +19,24 @@ export class BlogsRepository {
     });
   }
 
-  async findOrNotFoundFail(id: Types.ObjectId): Promise<BlogsDocument> {
+  async findUserById(id: Types.ObjectId): Promise<Result<BlogsDocument>> {
     const entity = await this.findById(id);
 
     if (!entity) {
-      //TODO: Replace with NotFoundDomainException
-      throw new Error('Blogs not found');
+      return {
+        data: entity,
+        status: ResultStatus.NotFound,
+        errorMessage: '',
+        extensions: [],
+      };
     }
 
-    return entity;
+    return {
+      data: entity,
+      status: ResultStatus.Success,
+      errorMessage: '',
+      extensions: [],
+    };
   }
 
   async save(entity: BlogsDocument) {
