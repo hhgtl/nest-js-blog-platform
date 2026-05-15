@@ -17,6 +17,17 @@ export class BlogsRepository {
     });
   }
 
+  async findOrNotFoundFail(id: Types.ObjectId): Promise<BlogsDocument> {
+    const entity = await this.findById(id);
+
+    if (!entity) {
+      //TODO: Replace with NotFoundDomainException
+      throw new Error('Blogs not found');
+    }
+
+    return entity;
+  }
+
   async save(entity: BlogsDocument) {
     await entity.save();
   }
