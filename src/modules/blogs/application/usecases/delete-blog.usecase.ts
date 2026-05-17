@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
+import { Result } from '../../../../core/types/result';
 
 export class DeleteBlogCommand {
   constructor(public id: Types.ObjectId) {}
@@ -9,13 +10,11 @@ export class DeleteBlogCommand {
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogUseCase implements ICommandHandler<
   DeleteBlogCommand,
-  void
+  Result<null>
 > {
   constructor(private blogsRepository: BlogsRepository) {}
 
-  async execute({ id }: DeleteBlogCommand): Promise<void> {
-    const entity = await this.blogsRepository.findOrNotFoundFail(id);
-
-    await this.blogsRepository.save(entity);
+  async execute({ id }: DeleteBlogCommand): Promise<Result<null>> {
+    return this.blogsRepository.deleteBlogById(id);
   }
 }

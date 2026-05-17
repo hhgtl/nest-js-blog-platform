@@ -3,10 +3,7 @@ import { UpdateBlogInputDto } from '../../api/input-dto/update-blog.input-dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
 import { ResultStatus } from '../../../../core/types/result-code';
-import {
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Result } from '../../../../core/types/result';
 
 export class UpdateBlogCommand {
   constructor(
@@ -18,24 +15,41 @@ export class UpdateBlogCommand {
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogUseCase implements ICommandHandler<
   UpdateBlogCommand,
-  void
+  Result<null>
 > {
   constructor(private blogsRepository: BlogsRepository) {}
 
-  async execute({ id, dto }: UpdateBlogCommand): Promise<void> {
-    const entity = await this.blogsRepository.findUserById(id);
+  async execute({ id, dto }: UpdateBlogCommand): Promise<Result<null>> {
+    const entity = await this.blogsRepository.findBlogById(id);
 
     if (entity.status === ResultStatus.NotFound) {
-      throw new NotFoundException();
+      return {
+        data: null,
+        status: ResultStatus.NotFound,
+        errorMessage: '',
+        extensions: [],
+      };
     }
 
     if (entity.status === ResultStatus.Success) {
-      const userEntity = entity.data;
-      userEntity.updateOne(dto);
+      const blogEntity = entity.data;
 
-      await this.blogsRepository.save(userEntity);
+      Object.assign(blogEntity, dto);
+      await this.blogsRepository.save(blogEntity);
+
+      return {
+        data: null,
+        status: ResultStatus.Success,
+        errorMessage: '',
+        extensions: [],
+      };
     }
 
-    throw new InternalServerErrorException();
+    return {
+      data: null,
+      status: ResultStatus.InternalError,
+      errorMessage: '',
+      extensions: [],
+    };
   }
 }

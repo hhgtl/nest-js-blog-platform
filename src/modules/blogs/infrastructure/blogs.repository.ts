@@ -19,7 +19,7 @@ export class BlogsRepository {
     });
   }
 
-  async findUserById(id: Types.ObjectId): Promise<Result<BlogsDocument>> {
+  async findBlogById(id: Types.ObjectId): Promise<Result<BlogsDocument>> {
     const entity = await this.findById(id);
 
     if (!entity) {
@@ -34,6 +34,28 @@ export class BlogsRepository {
     return {
       data: entity,
       status: ResultStatus.Success,
+      errorMessage: '',
+      extensions: [],
+    };
+  }
+
+  async deleteBlogById(_id: Types.ObjectId): Promise<Result<null>> {
+    const result = await this.blogModel.deleteOne({
+      _id,
+    });
+
+    if (result.deletedCount === 1) {
+      return {
+        data: null,
+        status: ResultStatus.Success,
+        errorMessage: '',
+        extensions: [],
+      };
+    }
+
+    return {
+      data: null,
+      status: ResultStatus.NotFound,
       errorMessage: '',
       extensions: [],
     };

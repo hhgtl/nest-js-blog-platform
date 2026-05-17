@@ -5,6 +5,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -18,6 +20,8 @@ import { Types } from 'mongoose';
 import { UpdateBlogCommand } from '../application/usecases/update-blog.usecase';
 import { UpdateBlogInputDto } from './input-dto/update-blog.input-dto';
 import { DeleteBlogCommand } from '../application/usecases/delete-blog.usecase';
+import { ResultStatus } from '../../../core/types/result-code';
+import { Result } from '../../../core/types/result';
 
 @Controller('blogs')
 export class BlogsController {
@@ -42,11 +46,37 @@ export class BlogsController {
     @Body() dto: UpdateBlogInputDto,
     @Param('id') id: Types.ObjectId,
   ): Promise<void> {
-    return this.commandBus.execute(new UpdateBlogCommand(id, dto));
+    const entity = await this.commandBus.execute<
+      UpdateBlogCommand,
+      Result<null>
+    >(new UpdateBlogCommand(id, dto));
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return;
+    }
+
+    throw new InternalServerErrorException();
   }
 
   @Delete(':id')
   async delete(@Param('id') id: Types.ObjectId): Promise<void> {
-    return this.commandBus.execute(new DeleteBlogCommand(id));
+    const entity = await this.commandBus.execute<
+      DeleteBlogCommand,
+      Result<null>
+    >(new DeleteBlogCommand(id));
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return;
+    }
+
+    throw new InternalServerErrorException();
   }
 }
