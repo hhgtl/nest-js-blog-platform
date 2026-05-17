@@ -36,8 +36,21 @@ export class BlogsController {
   }
 
   @Post()
-  async createBlog(@Body() dto: CreateBlogInputDto): Promise<Types.ObjectId> {
-    return this.commandBus.execute(new CreateBlogCommand(dto));
+  async createBlog(@Body() dto: CreateBlogInputDto): Promise<BlogViewDto> {
+    const entity = await this.commandBus.execute<
+      CreateBlogCommand,
+      Result<BlogViewDto>
+    >(new CreateBlogCommand(dto));
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return entity.data;
+    }
+
+    throw new InternalServerErrorException();
   }
 
   @Put(':id')
