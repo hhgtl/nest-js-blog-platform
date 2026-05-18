@@ -22,6 +22,7 @@ import { UpdateBlogInputDto } from './input-dto/update-blog.input-dto';
 import { DeleteBlogCommand } from '../application/usecases/delete-blog.usecase';
 import { ResultStatus } from '../../../core/types/result-code';
 import { Result } from '../../../core/types/result';
+import { GetBlogsByIdQuery } from '../application/queries/get-blogs-by-id.query-handler';
 
 @Controller('blogs')
 export class BlogsController {
@@ -33,6 +34,24 @@ export class BlogsController {
   @Get()
   async getAll(): Promise<BlogViewDto[]> {
     return this.queryBus.execute(new GetBlogsQuery());
+  }
+
+  @Get(':id')
+  async getBlogById(@Param('id') id: Types.ObjectId): Promise<BlogViewDto> {
+    const entity = await this.queryBus.execute<
+      GetBlogsByIdQuery,
+      Result<BlogViewDto>
+    >(new GetBlogsByIdQuery(id));
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return entity.data;
+    }
+
+    throw new InternalServerErrorException();
   }
 
   @Post()

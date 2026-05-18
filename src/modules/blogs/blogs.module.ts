@@ -9,6 +9,7 @@ import { UpdateBlogUseCase } from './application/usecases/update-blog.usecase';
 import { CqrsModule } from '@nestjs/cqrs';
 import { Blogs, BlogsSchema } from './domain/blogs.entity';
 import { MongooseModule } from '@nestjs/mongoose';
+import { GetBlogsByIdQueryHandler } from './application/queries/get-blogs-by-id.query-handler';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MongooseModule } from '@nestjs/mongoose';
   controllers: [BlogsController],
   providers: [
     GetBlogsQueryHandler,
+    GetBlogsByIdQueryHandler,
     BlogsQueryRepository,
     CreateBlogUseCase,
     DeleteBlogUseCase,
