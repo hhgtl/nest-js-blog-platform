@@ -8,6 +8,7 @@ import { PostQueryRepository } from './infrastructure/query/post.query-repositor
 import { CreatePostUseCase } from './application/usecases/create-post.usecase';
 import { PostRepository } from './infrastructure/post.repository';
 import { BlogsModule } from '../blogs/blogs.module';
+import { GetPostByIdQueryHandler } from './application/queries/get-post-by-id.query-handler';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { BlogsModule } from '../blogs/blogs.module';
   controllers: [PostController],
   providers: [
     GetPostsQueryHandler,
+    GetPostByIdQueryHandler,
     CreatePostUseCase,
     PostQueryRepository,
     PostRepository,

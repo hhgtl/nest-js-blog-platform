@@ -4,17 +4,20 @@ import {
   Get,
   InternalServerErrorException,
   NotFoundException,
+  Param,
   Post,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetPostsQuery } from '../application/queries/get-posts.query-handler';
 import { BlogViewDto } from '../../blogs/api/view-dto/blog.view-dto';
-import { CreateBlogCommand } from '../../blogs/application/usecases/create-blog.usecase';
 import { Result } from '../../../core/types/result';
 import { ResultStatus } from '../../../core/types/result-code';
 import { CreatePostInputDto } from './input-dto/create-post.input-dto';
 import { CreatPostCommand } from '../application/usecases/create-post.usecase';
 import { PostViewDto } from './view-dto/post.view-dto';
+import { Types } from 'mongoose';
+import { GetBlogsByIdQuery } from '../../blogs/application/queries/get-blogs-by-id.query-handler';
+import { GetPostByIdQuery } from '../application/queries/get-post-by-id.query-handler';
 
 @Controller('post')
 export class PostController {
@@ -24,8 +27,26 @@ export class PostController {
   ) {}
 
   @Get()
-  async getAllPosts(): Promise<BlogViewDto> {
+  async getAllPosts(): Promise<PostViewDto> {
     return this.queryBus.execute(new GetPostsQuery());
+  }
+
+  @Get(':id')
+  async getPostById(@Param('id') id: Types.ObjectId): Promise<PostViewDto> {
+    const entity = await this.queryBus.execute<
+      GetPostByIdQuery,
+      Result<PostViewDto>
+    >(new GetPostByIdQuery(id));
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return entity.data;
+    }
+
+    throw new InternalServerErrorException();
   }
 
   @Post()
