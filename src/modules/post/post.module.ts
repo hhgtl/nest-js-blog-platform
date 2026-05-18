@@ -7,11 +7,13 @@ import { GetPostsQueryHandler } from './application/queries/get-posts.query-hand
 import { PostQueryRepository } from './infrastructure/query/post.query-repository';
 import { CreatePostUseCase } from './application/usecases/create-post.usecase';
 import { PostRepository } from './infrastructure/post.repository';
+import { BlogsModule } from '../blogs/blogs.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     CqrsModule,
+    BlogsModule,
   ],
   controllers: [PostController],
   providers: [

@@ -26,5 +26,6 @@ import { GetBlogsByIdQueryHandler } from './application/queries/get-blogs-by-id.
     UpdateBlogUseCase,
     BlogsRepository,
   ],
+  exports: [BlogsRepository],
 })
 export class BlogsModule {}

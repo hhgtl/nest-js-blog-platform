@@ -6,6 +6,8 @@ import { Post, type PostModelType } from '../../domain/post.entity';
 import { PostViewDto } from '../../api/view-dto/post.view-dto';
 import { PostRepository } from '../../infrastructure/post.repository';
 import { CreatePostDto } from '../../dto/post.dto';
+import { BlogsRepository } from '../../../blogs/infrastructure/blogs.repository';
+import { Types } from 'mongoose';
 
 export class CreatPostCommand {
   constructor(public dto: CreatePostDto) {}
@@ -20,36 +22,38 @@ export class CreatePostUseCase implements ICommandHandler<
     @InjectModel(Post.name)
     private postModel: PostModelType,
     private postRepository: PostRepository,
+    private blogRepository: BlogsRepository,
   ) {}
 
   async execute({ dto }: CreatPostCommand): Promise<Result<PostViewDto>> {
-    const entity = await this.postModel.create(dto);
+    const { blogId, shortDescription, content, title } = dto;
 
-    await this.postRepository.save(entity);
+    const blog = await this.blogRepository.findBlogById(
+      new Types.ObjectId(blogId),
+    );
 
-    const blog = await this.postRepository.findPostById(entity._id);
-
-    if (blog.status === ResultStatus.NotFound) {
+    if (blog.status !== ResultStatus.Success) {
       return {
         data: null,
-        status: ResultStatus.NotFound,
+        status: blog.status,
         errorMessage: '',
         extensions: [],
       };
     }
 
-    if (blog.status === ResultStatus.Success) {
-      return {
-        data: PostViewDto.mapToView(blog.data),
-        status: ResultStatus.Success,
-        errorMessage: '',
-        extensions: [],
-      };
-    }
+    const newPost: Post = {
+      title,
+      shortDescription,
+      content,
+      blogName: blog.data.name,
+      blogId: blog.data.id,
+    };
+
+    const createdPost = await this.postModel.create(newPost);
 
     return {
-      data: null,
-      status: ResultStatus.InternalError,
+      data: PostViewDto.mapToView(createdPost),
+      status: ResultStatus.Success,
       errorMessage: '',
       extensions: [],
     };
