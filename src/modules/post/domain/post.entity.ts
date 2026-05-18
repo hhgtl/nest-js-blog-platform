@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 
 @Schema()
-export class Posts {
+export class Post {
   @Prop({ required: true })
   title: string;
 
@@ -19,6 +19,6 @@ export class Posts {
   blogName: string;
 }
 
-export type PostsDocument = HydratedDocument<Posts>;
-export const PostsSchema = SchemaFactory.createForClass(Posts);
-export type PostsModelType = Model<PostsDocument> & typeof Posts;
+export type PostDocument = HydratedDocument<Post>;
+export const PostSchema = SchemaFactory.createForClass(Post);
+export type PostModelType = Model<PostDocument> & typeof Post;
