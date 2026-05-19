@@ -76,7 +76,7 @@ export class BlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Body() dto: UpdateBlogInputDto,
-    @Param('id') id: Types.ObjectId,
+    @Param('id') id: string,
   ): Promise<void> {
     const entity = await this.commandBus.execute<
       UpdateBlogCommand,

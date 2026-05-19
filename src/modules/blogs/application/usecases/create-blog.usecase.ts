@@ -27,7 +27,7 @@ export class CreateBlogUseCase implements ICommandHandler<
 
     await this.blogsRepository.save(entity);
 
-    const blog = await this.blogsRepository.findBlogById(entity._id);
+    const blog = await this.blogsRepository.findBlogById(entity._id.toString());
 
     if (blog.status === ResultStatus.NotFound) {
       return {

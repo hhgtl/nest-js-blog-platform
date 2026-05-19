@@ -9,6 +9,7 @@ import { CreatePostUseCase } from './application/usecases/create-post.usecase';
 import { PostRepository } from './infrastructure/post.repository';
 import { BlogsModule } from '../blogs/blogs.module';
 import { GetPostByIdQueryHandler } from './application/queries/get-post-by-id.query-handler';
+import { UpdatePostUseCase } from './application/usecases/update-post.usecase';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { GetPostByIdQueryHandler } from './application/queries/get-post-by-id.qu
     GetPostsQueryHandler,
     GetPostByIdQueryHandler,
     CreatePostUseCase,
+    UpdatePostUseCase,
     PostQueryRepository,
     PostRepository,
   ],

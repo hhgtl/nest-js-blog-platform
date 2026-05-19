@@ -7,7 +7,7 @@ import { Result } from '../../../../core/types/result';
 
 export class UpdateBlogCommand {
   constructor(
-    public id: Types.ObjectId,
+    public id: string,
     public dto: UpdateBlogInputDto,
   ) {}
 }

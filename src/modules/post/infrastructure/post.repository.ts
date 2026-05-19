@@ -16,6 +16,15 @@ export class PostRepository {
   }
 
   async findPostById(id: Types.ObjectId): Promise<Result<PostDocument>> {
+    if (!Types.ObjectId.isValid(id)) {
+      return {
+        data: null,
+        status: ResultStatus.BadRequest,
+        errorMessage: 'Id must be a valid ObjectId',
+        extensions: [],
+      };
+    }
+
     const entity = await this.findById(id);
 
     if (!entity) {

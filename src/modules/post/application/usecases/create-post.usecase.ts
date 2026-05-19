@@ -28,9 +28,7 @@ export class CreatePostUseCase implements ICommandHandler<
   async execute({ dto }: CreatPostCommand): Promise<Result<PostViewDto>> {
     const { blogId, shortDescription, content, title } = dto;
 
-    const blog = await this.blogRepository.findBlogById(
-      new Types.ObjectId(blogId),
-    );
+    const blog = await this.blogRepository.findBlogById(blogId);
 
     if (blog.status !== ResultStatus.Success) {
       return {

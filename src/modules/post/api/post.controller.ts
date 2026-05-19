@@ -1,23 +1,27 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetPostsQuery } from '../application/queries/get-posts.query-handler';
-import { BlogViewDto } from '../../blogs/api/view-dto/blog.view-dto';
 import { Result } from '../../../core/types/result';
 import { ResultStatus } from '../../../core/types/result-code';
 import { CreatePostInputDto } from './input-dto/create-post.input-dto';
 import { CreatPostCommand } from '../application/usecases/create-post.usecase';
 import { PostViewDto } from './view-dto/post.view-dto';
 import { Types } from 'mongoose';
-import { GetBlogsByIdQuery } from '../../blogs/application/queries/get-blogs-by-id.query-handler';
 import { GetPostByIdQuery } from '../application/queries/get-post-by-id.query-handler';
+import { UpdatePostInputDto } from './input-dto/update-post.input-dto';
+import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
 
 @Controller('post')
 export class PostController {
@@ -62,6 +66,32 @@ export class PostController {
 
     if (entity.status === ResultStatus.Success) {
       return entity.data;
+    }
+
+    throw new InternalServerErrorException();
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updatePost(
+    @Body() dto: UpdatePostInputDto,
+    @Param('id') id: Types.ObjectId,
+  ): Promise<void> {
+    const entity = await this.commandBus.execute<
+      UpdatePostCommand,
+      Result<null>
+    >(new UpdatePostCommand(id, dto));
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return;
     }
 
     throw new InternalServerErrorException();

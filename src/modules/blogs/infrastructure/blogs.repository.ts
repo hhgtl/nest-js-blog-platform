@@ -19,8 +19,17 @@ export class BlogsRepository {
     });
   }
 
-  async findBlogById(id: Types.ObjectId): Promise<Result<BlogsDocument>> {
-    const entity = await this.findById(id);
+  async findBlogById(id: string): Promise<Result<BlogsDocument>> {
+    if (!Types.ObjectId.isValid(id)) {
+      return {
+        data: null,
+        status: ResultStatus.BadRequest,
+        errorMessage: 'Id must be a valid ObjectId',
+        extensions: [],
+      };
+    }
+
+    const entity = await this.findById(new Types.ObjectId(id));
 
     if (!entity) {
       return {
