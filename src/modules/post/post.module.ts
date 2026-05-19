@@ -10,6 +10,7 @@ import { PostRepository } from './infrastructure/post.repository';
 import { BlogsModule } from '../blogs/blogs.module';
 import { GetPostByIdQueryHandler } from './application/queries/get-post-by-id.query-handler';
 import { UpdatePostUseCase } from './application/usecases/update-post.usecase';
+import { DeletePostUseCase } from './application/usecases/delete-post.usecase';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UpdatePostUseCase } from './application/usecases/update-post.usecase';
     GetPostByIdQueryHandler,
     CreatePostUseCase,
     UpdatePostUseCase,
+    DeletePostUseCase,
     PostQueryRepository,
     PostRepository,
   ],

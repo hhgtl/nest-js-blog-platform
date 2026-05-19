@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -47,6 +48,10 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
     if (entity.status === ResultStatus.Success) {
       return entity.data;
     }
@@ -63,6 +68,10 @@ export class BlogsController {
 
     if (entity.status === ResultStatus.NotFound) {
       throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
     }
 
     if (entity.status === ResultStatus.Success) {
@@ -87,6 +96,10 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
     if (entity.status === ResultStatus.Success) {
       return;
     }
@@ -103,6 +116,10 @@ export class BlogsController {
 
     if (entity.status === ResultStatus.NotFound) {
       throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
     }
 
     if (entity.status === ResultStatus.Success) {

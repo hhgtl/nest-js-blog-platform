@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -22,6 +23,7 @@ import { Types } from 'mongoose';
 import { GetPostByIdQuery } from '../application/queries/get-post-by-id.query-handler';
 import { UpdatePostInputDto } from './input-dto/update-post.input-dto';
 import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
+import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
 
 @Controller('post')
 export class PostController {
@@ -46,6 +48,10 @@ export class PostController {
       throw new NotFoundException();
     }
 
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
     if (entity.status === ResultStatus.Success) {
       return entity.data;
     }
@@ -62,6 +68,10 @@ export class PostController {
 
     if (entity.status === ResultStatus.NotFound) {
       throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
     }
 
     if (entity.status === ResultStatus.Success) {
@@ -81,6 +91,28 @@ export class PostController {
       UpdatePostCommand,
       Result<null>
     >(new UpdatePostCommand(id, dto));
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return;
+    }
+
+    throw new InternalServerErrorException();
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: Types.ObjectId): Promise<void> {
+    const entity = await this.commandBus.execute<
+      DeletePostCommand,
+      Result<null>
+    >(new DeletePostCommand(id));
 
     if (entity.status === ResultStatus.NotFound) {
       throw new NotFoundException();
