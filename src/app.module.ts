@@ -5,11 +5,20 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BlogsModule } from './modules/blogs/blogs.module';
 import { PostModule } from './modules/post/post.module';
 import { TestingModule } from './modules/testing/testing.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017', {
-      dbName: 'blogger-platform',
+    // MongooseModule.forRoot('mongodb://localhost:27017', {
+    //   dbName: 'blogger-platform',
+    // }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.getOrThrow<string>('MONGO_URL'),
+        dbName: 'blogger-platform',
+      }),
     }),
     BlogsModule,
     PostModule,
