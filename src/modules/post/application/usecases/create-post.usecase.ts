@@ -7,7 +7,6 @@ import { PostViewDto } from '../../api/view-dto/post.view-dto';
 import { PostRepository } from '../../infrastructure/post.repository';
 import { CreatePostDto } from '../../dto/post.dto';
 import { BlogsRepository } from '../../../blogs/infrastructure/blogs.repository';
-import { Types } from 'mongoose';
 
 export class CreatPostCommand {
   constructor(public dto: CreatePostDto) {}

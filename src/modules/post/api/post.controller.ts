@@ -11,6 +11,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetPostsQuery } from '../application/queries/get-posts.query-handler';
@@ -24,6 +25,7 @@ import { GetPostByIdQuery } from '../application/queries/get-post-by-id.query-ha
 import { UpdatePostInputDto } from './input-dto/update-post.input-dto';
 import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
 import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
+import { BaseAuthorizationGuard } from '../../../core/guards/base-authorization.guard';
 
 @Controller('post')
 export class PostController {
@@ -59,6 +61,7 @@ export class PostController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(BaseAuthorizationGuard)
   @Post()
   async createPost(@Body() dto: CreatePostInputDto): Promise<PostViewDto> {
     const entity = await this.commandBus.execute<
@@ -81,6 +84,7 @@ export class PostController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(BaseAuthorizationGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePost(
@@ -107,6 +111,7 @@ export class PostController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(BaseAuthorizationGuard)
   @Delete(':id')
   async delete(@Param('id') id: Types.ObjectId): Promise<void> {
     const entity = await this.commandBus.execute<

@@ -11,6 +11,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogViewDto } from './view-dto/blog.view-dto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -24,6 +25,7 @@ import { DeleteBlogCommand } from '../application/usecases/delete-blog.usecase';
 import { ResultStatus } from '../../../core/types/result-code';
 import { Result } from '../../../core/types/result';
 import { GetBlogsByIdQuery } from '../application/queries/get-blogs-by-id.query-handler';
+import { BaseAuthorizationGuard } from '../../../core/guards/base-authorization.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -59,6 +61,7 @@ export class BlogsController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(BaseAuthorizationGuard)
   @Post()
   async createBlog(@Body() dto: CreateBlogInputDto): Promise<BlogViewDto> {
     const entity = await this.commandBus.execute<
@@ -81,6 +84,7 @@ export class BlogsController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(BaseAuthorizationGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
@@ -107,6 +111,7 @@ export class BlogsController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(BaseAuthorizationGuard)
   @Delete(':id')
   async delete(@Param('id') id: Types.ObjectId): Promise<void> {
     const entity = await this.commandBus.execute<
