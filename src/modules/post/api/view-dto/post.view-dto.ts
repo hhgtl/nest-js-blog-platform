@@ -7,6 +7,7 @@ export class PostViewDto {
   content: string;
   blogId: string;
   blogName: string;
+  createdAt: Date;
 
   static mapToView(Blog: PostDocument): PostViewDto {
     const dto = new PostViewDto();
@@ -16,6 +17,7 @@ export class PostViewDto {
     dto.content = Blog.content;
     dto.blogId = Blog.blogId;
     dto.blogName = Blog.blogName;
+    dto.createdAt = Blog.createdAt;
 
     return dto;
   }

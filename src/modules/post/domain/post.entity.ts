@@ -17,6 +17,9 @@ export class Post {
 
   @Prop({ required: true })
   blogName: string;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
 }
 
 export type PostDocument = HydratedDocument<Post>;

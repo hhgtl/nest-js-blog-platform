@@ -11,6 +11,12 @@ export class Blogs {
 
   @Prop({ required: true })
   websiteUrl: string;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
+
+  @Prop({ default: false })
+  isMembership: boolean;
 }
 
 export type BlogsDocument = HydratedDocument<Blogs>;
