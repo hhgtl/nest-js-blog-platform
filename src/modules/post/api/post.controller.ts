@@ -27,7 +27,7 @@ import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
 import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
 import { BaseAuthorizationGuard } from '../../../core/guards/base-authorization.guard';
 
-@Controller('post')
+@Controller('posts')
 export class PostController {
   constructor(
     private readonly queryBus: QueryBus,
