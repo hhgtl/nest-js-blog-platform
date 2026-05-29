@@ -113,6 +113,7 @@ export class PostController {
 
   @UseGuards(BaseAuthorizationGuard)
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: Types.ObjectId): Promise<void> {
     const entity = await this.commandBus.execute<
       DeletePostCommand,

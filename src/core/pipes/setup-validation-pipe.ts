@@ -10,8 +10,8 @@ export function setupValidationPipe(app: INestApplication): void {
     new ValidationPipe({
       transform: true,
       whitelist: true,
-      forbidNonWhitelisted: true,
-      stopAtFirstError: true,
+      forbidNonWhitelisted: false,
+      stopAtFirstError: false,
       exceptionFactory: (errors: ValidationError[]) => {
         const errorsMessages = errors.flatMap((error) => {
           const constraints = error.constraints
