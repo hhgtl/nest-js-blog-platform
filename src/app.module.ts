@@ -1,5 +1,3 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { configModule } from './config-dynamic-module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BlogsModule } from './modules/blogs/blogs.module';
 import { PostModule } from './modules/post/post.module';
 import { TestingModule } from './modules/testing/testing.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -21,7 +20,6 @@ import { TestingModule } from './modules/testing/testing.module';
         dbName: 'blogger-platform',
       }),
     }),
-    configModule,
     BlogsModule,
     PostModule,
     TestingModule,
