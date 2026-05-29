@@ -11,6 +11,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { BlogViewDto } from './view-dto/blog.view-dto';
@@ -26,6 +27,8 @@ import { ResultStatus } from '../../../core/types/result-code';
 import { Result } from '../../../core/types/result';
 import { GetBlogsByIdQuery } from '../application/queries/get-blogs-by-id.query-handler';
 import { BaseAuthorizationGuard } from '../../../core/guards/base-authorization.guard';
+import { GetBlogsQueryParams } from './input-dto/blogs-query-params.input-dto';
+import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -35,8 +38,10 @@ export class BlogsController {
   ) {}
 
   @Get()
-  async getAll(): Promise<BlogViewDto[]> {
-    return this.queryBus.execute(new GetBlogsQuery());
+  async getAll(
+    @Query() query: GetBlogsQueryParams,
+  ): Promise<PaginatedViewDto<BlogViewDto[]>> {
+    return this.queryBus.execute(new GetBlogsQuery(query));
   }
 
   @Get(':id')
