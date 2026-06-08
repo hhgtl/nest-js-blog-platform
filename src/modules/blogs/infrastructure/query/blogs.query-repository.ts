@@ -21,6 +21,10 @@ export class BlogsQueryRepository {
 
     const filter = {};
 
+    if (query.searchNameTerm) {
+      filter['name'] = { $regex: query.searchNameTerm, $options: 'i' };
+    }
+
     const entities = await this.blogModel
       .find(filter)
       .sort({ [query.sortBy]: query.sortDirection })
