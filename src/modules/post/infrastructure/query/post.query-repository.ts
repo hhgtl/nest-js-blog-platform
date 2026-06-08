@@ -21,8 +21,8 @@ export class PostQueryRepository {
     const entities = await this.postModel
       .find(filter)
       .sort({ [query.sortBy]: query.sortDirection })
-      .limit(query.calculateSkip())
-      .skip(query.pageSize);
+      .limit(query.pageSize)
+      .skip(query.calculateSkip());
 
     const totalCount = await this.postModel.countDocuments(filter);
 
