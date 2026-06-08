@@ -34,6 +34,9 @@ import {
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { PostViewDto } from '../../post/api/view-dto/post.view-dto';
 import { GetPostsByBlogIdQuery } from '../../post/application/queries/get-posts-by-blog-id.query-handler';
+import { CreatePostDto } from '../../post/dto/post.dto';
+import { CreatePostByBlogIdCommand } from '../../post/application/usecases/create-post-by-blogId.usecase';
+import { CreatePostByBlogIdInputDto } from './input-dto/create-post-by-blogId.input-dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -152,5 +155,30 @@ export class BlogsController {
     @Query() query: GetPostsByBlogIdQueryParams,
   ): Promise<PaginatedViewDto<PostViewDto[]>> {
     return this.queryBus.execute(new GetPostsByBlogIdQuery(blogId, query));
+  }
+
+  @UseGuards(BaseAuthorizationGuard)
+  @Post(`/:blogId/posts`)
+  async createPostByBlogId(
+    @Param('blogId') blogId: string,
+    @Body() createPostDto: CreatePostByBlogIdInputDto,
+  ): Promise<PostViewDto> {
+    const entity: Result<PostViewDto> = await this.commandBus.execute(
+      new CreatePostByBlogIdCommand(blogId, createPostDto),
+    );
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return entity.data;
+    }
+
+    throw new InternalServerErrorException();
   }
 }
