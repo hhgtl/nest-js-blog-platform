@@ -11,6 +11,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -26,6 +27,8 @@ import { UpdatePostInputDto } from './input-dto/update-post.input-dto';
 import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
 import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
 import { BaseAuthorizationGuard } from '../../../core/guards/base-authorization.guard';
+import { GetPostsQueryParams } from './input-dto/post-query-params.input-dto';
+import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 
 @Controller('posts')
 export class PostController {
@@ -35,8 +38,11 @@ export class PostController {
   ) {}
 
   @Get()
-  async getAllPosts(): Promise<PostViewDto> {
-    return this.queryBus.execute(new GetPostsQuery());
+  async getAllPosts(
+    @Query()
+    params: GetPostsQueryParams,
+  ): Promise<PaginatedViewDto<PostViewDto[]>> {
+    return this.queryBus.execute(new GetPostsQuery(params));
   }
 
   @Get(':id')
