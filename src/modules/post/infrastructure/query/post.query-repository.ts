@@ -8,6 +8,7 @@ import { PostViewDto } from '../../api/view-dto/post.view-dto';
 import { GetPostsQueryParams } from '../../api/input-dto/post-query-params.input-dto';
 import { BlogViewDto } from '../../../blogs/api/view-dto/blog.view-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
+import { GetPostsByBlogIdQueryParams } from '../../../blogs/api/input-dto/blogs-query-params.input-dto';
 
 @Injectable()
 export class PostQueryRepository {
@@ -57,5 +58,29 @@ export class PostQueryRepository {
       errorMessage: '',
       extensions: [],
     };
+  }
+
+  async getAllPostsByBlogId(
+    blogId: string,
+    query: GetPostsByBlogIdQueryParams,
+  ): Promise<PaginatedViewDto<PostViewDto[]>> {
+    const filter = { blogId };
+
+    const entities = await this.postModel
+      .find(filter)
+      .sort({ [query.sortBy]: query.sortDirection })
+      .limit(query.pageSize)
+      .skip(query.calculateSkip());
+
+    const totalCount = await this.postModel.countDocuments(filter);
+
+    const items = entities.map((e) => PostViewDto.mapToView(e));
+
+    return PaginatedViewDto.mapToView({
+      items,
+      totalCount,
+      page: query.pageNumber,
+      size: query.pageSize,
+    });
   }
 }

@@ -11,6 +11,7 @@ import { BlogsModule } from '../blogs/blogs.module';
 import { GetPostByIdQueryHandler } from './application/queries/get-post-by-id.query-handler';
 import { UpdatePostUseCase } from './application/usecases/update-post.usecase';
 import { DeletePostUseCase } from './application/usecases/delete-post.usecase';
+import { GetPostsByBlogIdHandler } from './application/queries/get-posts-by-blog-id.query-handler';
 
 @Module({
   imports: [
@@ -22,11 +23,13 @@ import { DeletePostUseCase } from './application/usecases/delete-post.usecase';
   providers: [
     GetPostsQueryHandler,
     GetPostByIdQueryHandler,
+    GetPostsByBlogIdHandler,
     CreatePostUseCase,
     UpdatePostUseCase,
     DeletePostUseCase,
     PostQueryRepository,
     PostRepository,
   ],
+  exports: [GetPostsByBlogIdHandler],
 })
 export class PostModule {}

@@ -10,3 +10,8 @@ export class GetBlogsQueryParams extends BaseQueryParams {
   @IsString()
   searchNameTerm?: string;
 }
+
+export class GetPostsByBlogIdQueryParams extends BaseQueryParams {
+  @IsEnum(BlogsSortBy)
+  sortBy = BlogsSortBy.CreatedAt;
+}

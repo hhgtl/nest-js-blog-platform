@@ -27,8 +27,13 @@ import { ResultStatus } from '../../../core/types/result-code';
 import { Result } from '../../../core/types/result';
 import { GetBlogsByIdQuery } from '../application/queries/get-blogs-by-id.query-handler';
 import { BaseAuthorizationGuard } from '../../../core/guards/base-authorization.guard';
-import { GetBlogsQueryParams } from './input-dto/blogs-query-params.input-dto';
+import {
+  GetBlogsQueryParams,
+  GetPostsByBlogIdQueryParams,
+} from './input-dto/blogs-query-params.input-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
+import { PostViewDto } from '../../post/api/view-dto/post.view-dto';
+import { GetPostsByBlogIdQuery } from '../../post/application/queries/get-posts-by-blog-id.query-handler';
 
 @Controller('blogs')
 export class BlogsController {
@@ -138,5 +143,14 @@ export class BlogsController {
     }
 
     throw new InternalServerErrorException();
+  }
+
+  @UseGuards(BaseAuthorizationGuard)
+  @Get(`/:blogId/posts`)
+  async getPostsByBlogId(
+    @Param('blogId') blogId: string,
+    @Query() query: GetPostsByBlogIdQueryParams,
+  ): Promise<PaginatedViewDto<PostViewDto[]>> {
+    return this.queryBus.execute(new GetPostsByBlogIdQuery(blogId, query));
   }
 }
