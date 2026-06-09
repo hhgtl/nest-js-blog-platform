@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsEnum, IsInt, IsOptional } from 'class-validator';
 
 export enum SortDirection {
   Asc = 'asc',
@@ -9,15 +9,20 @@ export enum SortDirection {
 //базовый класс для query параметров с пагинацией
 //значения по-умолчанию применятся автоматически при настройке глобального ValidationPipe в main.ts
 export class BaseQueryParams {
-  //для трансформации в number
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
+  @Transform(({ value }) => {
+    const parsed = Number(value);
+    return isNaN(parsed) || value === '' ? undefined : parsed;
+  })
+  @IsInt()
   pageNumber: number = 1;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
+  @Transform(({ value }) => {
+    const parsed = Number(value);
+    return isNaN(parsed) || value === '' ? undefined : parsed;
+  })
+  @IsInt()
   pageSize: number = 10;
 
   @IsOptional()
