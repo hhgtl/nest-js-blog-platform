@@ -12,6 +12,9 @@ export function setupValidationPipe(app: INestApplication): void {
       whitelist: true,
       forbidNonWhitelisted: false,
       stopAtFirstError: false,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
       exceptionFactory: (errors: ValidationError[]) => {
         const errorsMessages = errors.flatMap((error) => {
           const constraints = error.constraints
