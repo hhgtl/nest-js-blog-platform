@@ -50,7 +50,7 @@ export class CreatePostByBlogIdUseCase implements ICommandHandler<
       content,
       blogName: blog.data.name,
       blogId: blog.data.id,
-      createdAt: blog.data.createdAt,
+      createdAt: new Date(),
     };
 
     const createdPost = await this.postModel.create(newPost);
