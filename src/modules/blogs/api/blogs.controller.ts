@@ -34,7 +34,6 @@ import {
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { PostViewDto } from '../../post/api/view-dto/post.view-dto';
 import { GetPostsByBlogIdQuery } from '../../post/application/queries/get-posts-by-blog-id.query-handler';
-import { CreatePostDto } from '../../post/dto/post.dto';
 import { CreatePostByBlogIdCommand } from '../../post/application/usecases/create-post-by-blogId.usecase';
 import { CreatePostByBlogIdInputDto } from './input-dto/create-post-by-blogId.input-dto';
 
@@ -154,7 +153,24 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Query() query: GetPostsByBlogIdQueryParams,
   ): Promise<PaginatedViewDto<PostViewDto[]>> {
-    return this.queryBus.execute(new GetPostsByBlogIdQuery(blogId, query));
+    const result = await this.queryBus.execute<
+      GetPostsByBlogIdQuery,
+      Result<PaginatedViewDto<PostViewDto[]>>
+    >(new GetPostsByBlogIdQuery(blogId, query));
+
+    if (result.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (result.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
+    if (result.status === ResultStatus.Success) {
+      return result.data;
+    }
+
+    throw new InternalServerErrorException();
   }
 
   @UseGuards(BaseAuthorizationGuard)
