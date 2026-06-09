@@ -3,6 +3,7 @@ import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { BaseQueryParams } from '../../../../core/dto/base.query-params.input-dto';
 
 export class GetBlogsQueryParams extends BaseQueryParams {
+  @IsOptional()
   @IsEnum(BlogsSortBy)
   sortBy = BlogsSortBy.CreatedAt;
 
@@ -12,6 +13,7 @@ export class GetBlogsQueryParams extends BaseQueryParams {
 }
 
 export class GetPostsByBlogIdQueryParams extends BaseQueryParams {
+  @IsOptional()
   @IsEnum(BlogsSortBy)
   sortBy = BlogsSortBy.CreatedAt;
 }
