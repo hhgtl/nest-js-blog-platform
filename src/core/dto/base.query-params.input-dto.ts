@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional } from 'class-validator';
 
 export enum SortDirection {
   Asc = 'asc',
@@ -10,12 +10,17 @@ export enum SortDirection {
 //значения по-умолчанию применятся автоматически при настройке глобального ValidationPipe в main.ts
 export class BaseQueryParams {
   //для трансформации в number
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   pageNumber: number = 1;
+
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   pageSize: number = 10;
+
+  @IsOptional()
   @IsEnum(SortDirection)
   sortDirection: SortDirection = SortDirection.Desc;
 
