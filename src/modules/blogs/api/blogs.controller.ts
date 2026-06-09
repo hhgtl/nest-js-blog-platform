@@ -147,7 +147,6 @@ export class BlogsController {
     throw new InternalServerErrorException();
   }
 
-  @UseGuards(BaseAuthorizationGuard)
   @Get(`/:blogId/posts`)
   async getPostsByBlogId(
     @Param('blogId') blogId: string,
