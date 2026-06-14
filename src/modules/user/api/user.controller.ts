@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   InternalServerErrorException,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -19,6 +20,8 @@ import { Result } from '../../../core/types/result';
 import { UserViewDto } from './view-dto/user.view-dto';
 import { ResultStatus } from '../../../core/types/result-code';
 import { CreateUserInputDto } from './input-dto/create-user.input-dto';
+import { DeleteUserCommand } from '../application/usecases/delete-user-by-id.usecase';
+import { Types } from 'mongoose';
 
 @Controller('users')
 export class UserController {
@@ -52,6 +55,21 @@ export class UserController {
     throw new InternalServerErrorException();
   }
 
-  @Delete()
-  deleteUser() {}
+  @Delete(':id')
+  async deleteUser(@Param('id') id: string) {
+    const result = await this.commandBus.execute<
+      DeleteUserCommand,
+      Result<UserViewDto>
+    >(new DeleteUserCommand(new Types.ObjectId(id)));
+
+    if (result.status === ResultStatus.BadRequest) {
+      throw new BadRequestException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.Success) {
+      return;
+    }
+
+    throw new InternalServerErrorException();
+  }
 }

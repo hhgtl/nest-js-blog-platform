@@ -7,6 +7,7 @@ import { GetUsersQueryHandler } from './application/queries/get-users.query-hand
 import { UserQueryRepository } from './infrastructure/query/user.query-repository';
 import { CreateUserUseCase } from './application/usecases/create-user.usecase';
 import { UserRepository } from './infrastructure/user.repository';
+import { DeleteUserUseCase } from './application/usecases/delete-user-by-id.usecase';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserRepository } from './infrastructure/user.repository';
   providers: [
     GetUsersQueryHandler,
     CreateUserUseCase,
+    DeleteUserUseCase,
     UserQueryRepository,
     UserRepository,
   ],

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, type UserModelType } from '../domain/user.entity';
+import { Result } from '../../../core/types/result';
+import { ResultStatus } from '../../../core/types/result-code';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class UserRepository {
@@ -16,5 +19,25 @@ export class UserRepository {
 
   async createUser(newUser: User): Promise<UserDocument> {
     return this.userModel.create(newUser);
+  }
+
+  async deleteUserById(_id: Types.ObjectId): Promise<Result<null>> {
+    const deleteResult = await this.userModel.deleteOne({ _id });
+
+    if (deleteResult.deletedCount === 1) {
+      return {
+        data: null,
+        status: ResultStatus.Success,
+        errorMessage: '',
+        extensions: [],
+      };
+    }
+
+    return {
+      data: null,
+      status: ResultStatus.NotFound,
+      errorMessage: '',
+      extensions: [],
+    };
   }
 }
