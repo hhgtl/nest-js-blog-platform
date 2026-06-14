@@ -1,6 +1,6 @@
 import { ResultStatus } from './result-code';
 
-type ExtensionType = {
+export type ExtensionType = {
   field: string | null;
   message: string;
 };

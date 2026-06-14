@@ -5,6 +5,8 @@ import { User, UserSchema } from './domain/user.entity';
 import { UserController } from './api/user.controller';
 import { GetUsersQueryHandler } from './application/queries/get-users.query-handler';
 import { UserQueryRepository } from './infrastructure/query/user.query-repository';
+import { CreateUserUseCase } from './application/usecases/create-user.usecase';
+import { UserRepository } from './infrastructure/user.repository';
 
 @Module({
   imports: [
@@ -12,7 +14,12 @@ import { UserQueryRepository } from './infrastructure/query/user.query-repositor
     CqrsModule,
   ],
   controllers: [UserController],
-  providers: [GetUsersQueryHandler, UserQueryRepository],
+  providers: [
+    GetUsersQueryHandler,
+    CreateUserUseCase,
+    UserQueryRepository,
+    UserRepository,
+  ],
   exports: [],
 })
 export class UserModule {}
