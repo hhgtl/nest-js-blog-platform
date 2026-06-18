@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -71,7 +72,7 @@ export class UserController {
     }
 
     if (result.status === ResultStatus.NotFound) {
-      throw new BadRequestException(result.extensions);
+      throw new NotFoundException(result.extensions);
     }
 
     if (result.status === ResultStatus.Success) {

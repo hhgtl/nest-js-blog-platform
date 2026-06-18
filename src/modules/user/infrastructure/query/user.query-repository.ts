@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, type UserModelType } from '../../domain/user.entity';
+import {
+  User,
+  UserDocument,
+  type UserModelType,
+} from '../../domain/user.entity';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { UserViewDto } from '../../api/view-dto/user.view-dto';
 import { GetUserQueryParams } from '../../api/view-dto/get-post-query-params.view-dto';
@@ -12,14 +16,24 @@ export class UserQueryRepository {
   async getAllUsers(
     query: GetUserQueryParams,
   ): Promise<PaginatedViewDto<UserViewDto[]>> {
-    const filter = {};
+    const filter: any = {};
+    const orConditions: any[] = [];
 
     if (query.searchEmailTerm) {
-      filter['email'] = { $regex: query.searchEmailTerm, $options: 'i' };
+      orConditions.push({
+        email: { $regex: query.searchEmailTerm, $options: 'i' },
+      });
     }
 
     if (query.searchLoginTerm) {
-      filter['login'] = { $regex: query.searchLoginTerm, $options: 'i' };
+      orConditions.push({
+        login: { $regex: query.searchLoginTerm, $options: 'i' },
+      });
+    }
+
+    if (orConditions.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      filter.$or = orConditions;
     }
 
     const entities = await this.userModel

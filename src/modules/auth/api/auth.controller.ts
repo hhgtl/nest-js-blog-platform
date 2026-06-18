@@ -8,6 +8,7 @@ import {
   NotFoundException,
   Post,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { LoginInputDto } from './input-dto/login.input-dto';
@@ -43,7 +44,7 @@ export class AuthController {
     }
 
     if (result.status === ResultStatus.NotFound) {
-      throw new NotFoundException(result.extensions);
+      throw new UnauthorizedException(result.extensions);
     }
 
     if (result.status === ResultStatus.Success) {
