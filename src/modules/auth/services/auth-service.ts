@@ -16,7 +16,7 @@ export class AuthService {
 
     if (!user) {
       return {
-        status: ResultStatus.NotFound,
+        status: ResultStatus.Unauthorized,
         data: null,
         errorMessage: 'Not Found',
         extensions: [{ field: 'loginOrEmail', message: 'Not Found' }],
@@ -30,7 +30,7 @@ export class AuthService {
 
     if (!isPassCorrect)
       return {
-        status: ResultStatus.BadRequest,
+        status: ResultStatus.Unauthorized,
         data: null,
         errorMessage: 'Bad Request',
         extensions: [{ field: 'password', message: 'Wrong password' }],

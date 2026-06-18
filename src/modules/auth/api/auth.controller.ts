@@ -38,12 +38,12 @@ export class AuthController {
       LoginCommand,
       Result<LoginType>
     >(new LoginCommand(dto));
-    console.log(result);
+
     if (result.status === ResultStatus.BadRequest) {
       throw new BadRequestException(result.extensions);
     }
 
-    if (result.status === ResultStatus.NotFound) {
+    if (result.status === ResultStatus.Unauthorized) {
       throw new UnauthorizedException(result.extensions);
     }
 
