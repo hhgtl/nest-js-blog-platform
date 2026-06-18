@@ -13,10 +13,11 @@ export class TestingController {
   async deleteAll() {
     const collections = await this.databaseConnection.listCollections();
 
-    const promises = collections.map((collection) =>
-      this.databaseConnection.collection(collection.name).deleteMany({}),
-    );
-    await Promise.all(promises);
+    const dropPromises = collections
+      .filter((col) => !col.name.startsWith('system.')) // Ігноруємо системні колекції
+      .map((col) => this.databaseConnection.dropCollection(col.name));
+
+    await Promise.all(dropPromises);
 
     return {
       status: 'succeeded',
