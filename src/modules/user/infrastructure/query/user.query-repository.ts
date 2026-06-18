@@ -14,6 +14,14 @@ export class UserQueryRepository {
   ): Promise<PaginatedViewDto<UserViewDto[]>> {
     const filter = {};
 
+    if (query.searchEmailTerm) {
+      filter['email'] = { $regex: query.searchEmailTerm, $options: 'i' };
+    }
+
+    if (query.searchLoginTerm) {
+      filter['login'] = { $regex: query.searchLoginTerm, $options: 'i' };
+    }
+
     const entities = await this.userModel
       .find(filter)
       .sort({ [query.sortBy]: query.sortDirection })
