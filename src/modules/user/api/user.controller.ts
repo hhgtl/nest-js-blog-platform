@@ -4,6 +4,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   InternalServerErrorException,
   Param,
   Post,
@@ -55,7 +57,9 @@ export class UserController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(BaseAuthorizationGuard)
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: string) {
     const result = await this.commandBus.execute<
       DeleteUserCommand,
@@ -63,6 +67,10 @@ export class UserController {
     >(new DeleteUserCommand(new Types.ObjectId(id)));
 
     if (result.status === ResultStatus.BadRequest) {
+      throw new BadRequestException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.NotFound) {
       throw new BadRequestException(result.extensions);
     }
 

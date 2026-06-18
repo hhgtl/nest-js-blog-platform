@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Post,
@@ -26,6 +28,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async login(
     @Body() dto: LoginInputDto,
     @Res({ passthrough: true }) res: Response,
