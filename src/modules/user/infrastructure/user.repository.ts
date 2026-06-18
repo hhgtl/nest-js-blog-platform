@@ -17,6 +17,13 @@ export class UserRepository {
     return this.userModel.findOne({ login });
   }
 
+  async findByLoginOrEmail(loginOrEmail: string): Promise<UserDocument | null> {
+    const regex = new RegExp(`^${loginOrEmail}$`, 'i');
+    return this.userModel.findOne({
+      $or: [{ email: regex }, { login: loginOrEmail }],
+    });
+  }
+
   async createUser(newUser: User): Promise<UserDocument> {
     return this.userModel.create(newUser);
   }

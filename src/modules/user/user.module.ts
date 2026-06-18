@@ -22,6 +22,6 @@ import { DeleteUserUseCase } from './application/usecases/delete-user-by-id.usec
     UserQueryRepository,
     UserRepository,
   ],
-  exports: [],
+  exports: [UserRepository],
 })
 export class UserModule {}

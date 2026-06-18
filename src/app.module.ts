@@ -7,6 +7,7 @@ import { PostModule } from './modules/post/post.module';
 import { TestingModule } from './modules/testing/testing.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UserModule } from './modules/user/user.module';
     BlogsModule,
     PostModule,
     UserModule,
+    AuthModule,
     TestingModule,
   ],
   controllers: [AppController],
