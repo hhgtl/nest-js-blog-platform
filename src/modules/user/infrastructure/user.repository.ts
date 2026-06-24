@@ -9,6 +9,10 @@ import { Types } from 'mongoose';
 export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: UserModelType) {}
 
+  async findUserById(userId: Types.ObjectId): Promise<UserDocument | null> {
+    return this.userModel.findOne({ _id: userId });
+  }
+
   async findUserByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email });
   }

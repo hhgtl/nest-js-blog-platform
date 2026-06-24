@@ -8,6 +8,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Post,
+  Req,
   Res,
   UnauthorizedException,
   UseGuards,
@@ -23,6 +24,12 @@ import {
 } from '../constants/auth.constants';
 import { type Response } from 'express';
 import { JwtAuthGuard } from '../../../core/guards/jwt-authorization.guard';
+import { GetMeQuery } from '../application/queries/get-me.query-handler';
+import { MeViewDto } from './view-dto/me.view-dto';
+
+type RequestWithUser = Request & {
+  user?: { userId: string };
+};
 
 @Controller('auth')
 export class AuthController {
@@ -33,8 +40,28 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async me() {
-    return { message: 'Hello' };
+  async me(@Req() req: RequestWithUser): Promise<MeViewDto> {
+    const result = await this.queryBus.execute<GetMeQuery, Result<MeViewDto>>(
+      new GetMeQuery(req.user!.userId),
+    );
+
+    if (result.status === ResultStatus.BadRequest) {
+      throw new BadRequestException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.Unauthorized) {
+      throw new UnauthorizedException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (result.status === ResultStatus.Success) {
+      return result.data;
+    }
+
+    throw new InternalServerErrorException();
   }
 
   @Post('login')
