@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
@@ -9,6 +10,7 @@ import {
   Post,
   Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { LoginInputDto } from './input-dto/login.input-dto';
@@ -20,6 +22,7 @@ import {
   REFRESH_TOKEN,
 } from '../constants/auth.constants';
 import { type Response } from 'express';
+import { JwtAuthGuard } from '../../../core/guards/jwt-authorization.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,8 +31,14 @@ export class AuthController {
     private readonly queryBus: QueryBus,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async me() {
+    return { message: 'Hello' };
+  }
+
   @Post('login')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginInputDto,
     @Res({ passthrough: true }) res: Response,
