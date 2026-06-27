@@ -12,6 +12,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -29,6 +30,14 @@ import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
 import { BaseAuthorizationGuard } from '../../../core/guards/base-authorization.guard';
 import { GetPostsQueryParams } from './input-dto/post-query-params.input-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
+import { CreateCommentByPostIdInputDto } from './input-dto/create-comment-by-post-id.input-dto';
+import { JwtAuthGuard } from '../../../core/guards/jwt-authorization.guard';
+import { CreateCommentByPostIdCommand } from '../application/usecases/create-comment-by-post-id.usecase';
+import { CommentViewDto } from '../../comments/api/view-dto/comment.view-dto';
+
+type RequestWithUser = Request & {
+  user?: { userId: string };
+};
 
 @Controller('posts')
 export class PostController {
@@ -125,6 +134,34 @@ export class PostController {
       DeletePostCommand,
       Result<null>
     >(new DeletePostCommand(id));
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return;
+    }
+
+    throw new InternalServerErrorException();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/comments')
+  async createComment(
+    @Body() { content }: CreateCommentByPostIdInputDto,
+    @Param('id') postId: string,
+    @Req() req: RequestWithUser,
+  ) {
+    const userId = req.user?.userId!;
+
+    const entity: Result<CommentViewDto> = await this.commandBus.execute(
+      new CreateCommentByPostIdCommand(userId, postId, content),
+    );
 
     if (entity.status === ResultStatus.NotFound) {
       throw new NotFoundException();

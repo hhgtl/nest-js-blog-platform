@@ -13,12 +13,17 @@ import { UpdatePostUseCase } from './application/usecases/update-post.usecase';
 import { DeletePostUseCase } from './application/usecases/delete-post.usecase';
 import { GetPostsByBlogIdHandler } from './application/queries/get-posts-by-blog-id.query-handler';
 import { CreatePostByBlogIdUseCase } from './application/usecases/create-post-by-blogId.usecase';
+import { CommentsModule } from '../comments/comments.module';
+import { CreateCommentByPostIdCommand } from './application/usecases/create-comment-by-post-id.usecase';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     CqrsModule,
     BlogsModule,
+    CommentsModule,
+    UserModule,
   ],
   controllers: [PostController],
   providers: [
@@ -31,6 +36,7 @@ import { CreatePostByBlogIdUseCase } from './application/usecases/create-post-by
     DeletePostUseCase,
     PostQueryRepository,
     PostRepository,
+    CreateCommentByPostIdCommand,
   ],
   exports: [GetPostsByBlogIdHandler],
 })
