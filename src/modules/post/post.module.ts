@@ -14,12 +14,19 @@ import { DeletePostUseCase } from './application/usecases/delete-post.usecase';
 import { GetPostsByBlogIdHandler } from './application/queries/get-posts-by-blog-id.query-handler';
 import { CreatePostByBlogIdUseCase } from './application/usecases/create-post-by-blogId.usecase';
 import { CommentsModule } from '../comments/comments.module';
-import { CreateCommentByPostIdCommand } from './application/usecases/create-comment-by-post-id.usecase';
+import {
+  CreateCommentByPostIdCommand,
+  CreateCommentByPostIdUseCase,
+} from './application/usecases/create-comment-by-post-id.usecase';
 import { UserModule } from '../user/user.module';
+import { Comments, CommentsSchema } from '../comments/domain/comments.entity';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
+    MongooseModule.forFeature([
+      { name: Post.name, schema: PostSchema },
+      { name: Comments.name, schema: CommentsSchema },
+    ]),
     CqrsModule,
     BlogsModule,
     CommentsModule,
@@ -36,7 +43,7 @@ import { UserModule } from '../user/user.module';
     DeletePostUseCase,
     PostQueryRepository,
     PostRepository,
-    CreateCommentByPostIdCommand,
+    CreateCommentByPostIdUseCase,
   ],
   exports: [GetPostsByBlogIdHandler],
 })

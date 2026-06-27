@@ -172,7 +172,7 @@ export class PostController {
     }
 
     if (entity.status === ResultStatus.Success) {
-      return;
+      return entity.data;
     }
 
     throw new InternalServerErrorException();

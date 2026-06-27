@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Result } from '../../../../core/types/result';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, type PostModelType } from '../../domain/post.entity';
 import { PostRepository } from '../../infrastructure/post.repository';
 import { CommentsRepository } from '../../../comments/infrastructure/comments.repository';
 import { ResultStatus } from '../../../../core/types/result-code';
@@ -22,7 +21,7 @@ export class CreateCommentByPostIdCommand {
 }
 
 @CommandHandler(CreateCommentByPostIdCommand)
-export class CreatePostByBlogIdUseCase implements ICommandHandler<
+export class CreateCommentByPostIdUseCase implements ICommandHandler<
   CreateCommentByPostIdCommand,
   Result<CommentViewDto>
 > {
@@ -30,7 +29,6 @@ export class CreatePostByBlogIdUseCase implements ICommandHandler<
     @InjectModel(Comments.name)
     private commentModel: CommentsModelType,
     private postRepository: PostRepository,
-    private commentRepository: CommentsRepository,
     private userRepository: UserRepository,
   ) {}
 
