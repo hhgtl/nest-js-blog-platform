@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  Post,
-  PostDocument,
-  type PostModelType,
-} from '../../post/domain/post.entity';
 import { Types } from 'mongoose';
 import { Result } from '../../../core/types/result';
 import { ResultStatus } from '../../../core/types/result-code';
@@ -55,7 +50,7 @@ export class CommentsRepository {
     };
   }
 
-  async deletePostById(_id: Types.ObjectId): Promise<Result<null>> {
+  async deleteCommentById(_id: Types.ObjectId): Promise<Result<null>> {
     const result = await this.commentModel.deleteOne({
       _id,
     });
@@ -77,7 +72,7 @@ export class CommentsRepository {
     };
   }
 
-  async save(entity: PostDocument) {
+  async save(entity: CommentsDocument) {
     await entity.save();
   }
 }

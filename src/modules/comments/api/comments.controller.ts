@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Delete,
   Get,
@@ -15,6 +16,9 @@ import { Types } from 'mongoose';
 import { ResultStatus } from '../../../core/types/result-code';
 import { Result } from '../../../core/types/result';
 import { CommentViewDto } from './view-dto/comment.view-dto';
+import { UpdateCommentsInputDto } from './input-dto/update-comments.input.dto';
+import { UpdateCommentCommand } from '../application/usecases/update-comments.usecase';
+import { DeleteCommentsCommand } from '../application/usecases/delete-comments.usecase';
 
 @Controller('auth')
 export class CommentsController {
@@ -49,8 +53,55 @@ export class CommentsController {
   }
 
   @Put(':id')
-  updateCommentById() {}
+  async updateCommentById(
+    @Param('id') id: string,
+    @Body() dto: UpdateCommentsInputDto,
+  ) {
+    const result: Result<CommentViewDto> = await this.queryBus.execute(
+      new UpdateCommentCommand(id, dto),
+    );
+
+    if (result.status === ResultStatus.BadRequest) {
+      throw new BadRequestException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.Unauthorized) {
+      throw new UnauthorizedException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (result.status === ResultStatus.Success) {
+      return result.data;
+    }
+
+    throw new InternalServerErrorException();
+  }
 
   @Delete(':id')
-  deleteCommentById() {}
+  async deleteCommentById(@Param('id') id: string) {
+    const result: Result<CommentViewDto> = await this.queryBus.execute(
+      new DeleteCommentsCommand(new Types.ObjectId(id)),
+    );
+
+    if (result.status === ResultStatus.BadRequest) {
+      throw new BadRequestException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.Unauthorized) {
+      throw new UnauthorizedException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (result.status === ResultStatus.Success) {
+      return result.data;
+    }
+
+    throw new InternalServerErrorException();
+  }
 }
