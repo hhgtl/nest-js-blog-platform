@@ -3,12 +3,14 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   InternalServerErrorException,
   NotFoundException,
   Param,
   Put,
+  Req,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -22,6 +24,10 @@ import { UpdateCommentsInputDto } from './input-dto/update-comments.input.dto';
 import { UpdateCommentCommand } from '../application/usecases/update-comments.usecase';
 import { DeleteCommentsCommand } from '../application/usecases/delete-comments.usecase';
 import { JwtAuthGuard } from '../../../core/guards/jwt-authorization.guard';
+
+type RequestWithUser = Request & {
+  user?: { userId: string };
+};
 
 @Controller('comments')
 export class CommentsController {
@@ -61,9 +67,10 @@ export class CommentsController {
   async updateCommentById(
     @Param('id') id: string,
     @Body() dto: UpdateCommentsInputDto,
+    @Req() req: RequestWithUser,
   ) {
     const result: Result<CommentViewDto> = await this.commandBus.execute(
-      new UpdateCommentCommand(id, dto),
+      new UpdateCommentCommand(id, dto, req.user!.userId),
     );
 
     if (result.status === ResultStatus.BadRequest) {
@@ -88,9 +95,12 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Delete(':id')
-  async deleteCommentById(@Param('id') id: string) {
+  async deleteCommentById(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ) {
     const result: Result<CommentViewDto> = await this.commandBus.execute(
-      new DeleteCommentsCommand(new Types.ObjectId(id)),
+      new DeleteCommentsCommand(new Types.ObjectId(id), req.user!.userId),
     );
 
     if (result.status === ResultStatus.BadRequest) {
@@ -99,6 +109,10 @@ export class CommentsController {
 
     if (result.status === ResultStatus.Unauthorized) {
       throw new UnauthorizedException(result.extensions);
+    }
+
+    if (result.status === ResultStatus.Forbidden) {
+      throw new ForbiddenException(result.extensions);
     }
 
     if (result.status === ResultStatus.NotFound) {
