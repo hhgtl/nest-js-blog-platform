@@ -34,6 +34,10 @@ import { CreateCommentByPostIdInputDto } from './input-dto/create-comment-by-pos
 import { JwtAuthGuard } from '../../../core/guards/jwt-authorization.guard';
 import { CreateCommentByPostIdCommand } from '../application/usecases/create-comment-by-post-id.usecase';
 import { CommentViewDto } from '../../comments/api/view-dto/comment.view-dto';
+import {
+  GetCommentsByPostIdHandler,
+  GetCommentsByPostIdQuery,
+} from '../application/queries/get-comments-by-post-id-handler';
 
 type RequestWithUser = Request & {
   user?: { userId: string };
@@ -162,6 +166,29 @@ export class PostController {
     const entity: Result<CommentViewDto> = await this.commandBus.execute(
       new CreateCommentByPostIdCommand(userId, postId, content),
     );
+
+    if (entity.status === ResultStatus.NotFound) {
+      throw new NotFoundException();
+    }
+
+    if (entity.status === ResultStatus.BadRequest) {
+      throw new BadRequestException();
+    }
+
+    if (entity.status === ResultStatus.Success) {
+      return entity.data;
+    }
+
+    throw new InternalServerErrorException();
+  }
+
+  @Get(':postId/comments')
+  async getCommentsByPostId(
+    @Param('postId') postId: string,
+    @Query() query: GetPostsQueryParams,
+  ) {
+    const entity: Result<PaginatedViewDto<CommentViewDto>> =
+      await this.queryBus.execute(new GetCommentsByPostIdQuery(postId, query));
 
     if (entity.status === ResultStatus.NotFound) {
       throw new NotFoundException();

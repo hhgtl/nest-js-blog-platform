@@ -20,6 +20,9 @@ export class Comments {
 
   @Prop({ default: Date.now })
   createdAt: Date;
+
+  @Prop({ required: true })
+  postId: string;
 }
 
 export type CommentsDocument = HydratedDocument<Comments>;

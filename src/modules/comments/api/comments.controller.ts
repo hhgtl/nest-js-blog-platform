@@ -4,11 +4,13 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   InternalServerErrorException,
   NotFoundException,
   Param,
   Put,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetCommentByIdQuery } from '../application/queries/get-comments-by-id.query-handler';
@@ -19,8 +21,9 @@ import { CommentViewDto } from './view-dto/comment.view-dto';
 import { UpdateCommentsInputDto } from './input-dto/update-comments.input.dto';
 import { UpdateCommentCommand } from '../application/usecases/update-comments.usecase';
 import { DeleteCommentsCommand } from '../application/usecases/delete-comments.usecase';
+import { JwtAuthGuard } from '../../../core/guards/jwt-authorization.guard';
 
-@Controller('auth')
+@Controller('comments')
 export class CommentsController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -52,12 +55,14 @@ export class CommentsController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
   @Put(':id')
   async updateCommentById(
     @Param('id') id: string,
     @Body() dto: UpdateCommentsInputDto,
   ) {
-    const result: Result<CommentViewDto> = await this.queryBus.execute(
+    const result: Result<CommentViewDto> = await this.commandBus.execute(
       new UpdateCommentCommand(id, dto),
     );
 
@@ -80,9 +85,11 @@ export class CommentsController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
   @Delete(':id')
   async deleteCommentById(@Param('id') id: string) {
-    const result: Result<CommentViewDto> = await this.queryBus.execute(
+    const result: Result<CommentViewDto> = await this.commandBus.execute(
       new DeleteCommentsCommand(new Types.ObjectId(id)),
     );
 

@@ -20,6 +20,7 @@ import {
 } from './application/usecases/create-comment-by-post-id.usecase';
 import { UserModule } from '../user/user.module';
 import { Comments, CommentsSchema } from '../comments/domain/comments.entity';
+import { GetCommentsByPostIdHandler } from './application/queries/get-comments-by-post-id-handler';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { Comments, CommentsSchema } from '../comments/domain/comments.entity';
     PostQueryRepository,
     PostRepository,
     CreateCommentByPostIdUseCase,
+    GetCommentsByPostIdHandler,
   ],
   exports: [GetPostsByBlogIdHandler],
 })
