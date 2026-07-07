@@ -81,6 +81,10 @@ export class CommentsController {
       throw new UnauthorizedException(result.extensions);
     }
 
+    if (result.status === ResultStatus.Forbidden) {
+      throw new ForbiddenException(result.extensions);
+    }
+
     if (result.status === ResultStatus.NotFound) {
       throw new NotFoundException();
     }
