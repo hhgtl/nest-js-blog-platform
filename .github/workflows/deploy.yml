@@ -11,6 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4  # Клонирует код из репозитория
 
+      - name: Встановлення pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Встановлення Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24 # Як локально (Node 24)
+          cache: pnpm # Кешує залежності між запусками
+
+      - name: Встановлення залежностей
+        run: pnpm install --frozen-lockfile
+
       - name: Установка зависимостей
         run: pnpm ci
 
