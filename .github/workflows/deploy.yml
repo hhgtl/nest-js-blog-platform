@@ -1,0 +1,21 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]  # Запускать только при пуше в ветку main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Используем GitHub-hosted runner с Ubuntu
+
+    steps:
+      - uses: actions/checkout@v4  # Клонирует код из репозитория
+
+      - name: Установка зависимостей
+        run: npm ci
+
+      - name: Линтинг
+        run: npm run lint
+
+      - name: Запуск тестов
+        run: npm run test
