@@ -25,9 +25,6 @@ jobs:
       - name: Встановлення залежностей
         run: pnpm install --frozen-lockfile
 
-      - name: Установка зависимостей
-        run: pnpm ci
-
       - name: Линтинг
         run: pnpm run lint
 
