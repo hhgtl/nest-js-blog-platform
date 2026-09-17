@@ -10,9 +10,17 @@ import { RegistrationConfirmationUseCase } from './application/usecases/registra
 import { RegistrationEmailResendingUseCase } from './application/usecases/registration-email-resending.usecase';
 import { RefreshTokenUseCase } from './application/usecases/refresh-token.usecase';
 import { LogoutUseCase } from './application/usecases/logout.usecase';
+import { SecurityDevicesModule } from '../security-devices/security-devices.module';
+import { RateLimitModule } from '../rate-limit/rate-limit.module';
 
 @Module({
-  imports: [CqrsModule, UserModule, JwtRefreshBlackListModule],
+  imports: [
+    CqrsModule,
+    UserModule,
+    JwtRefreshBlackListModule,
+    SecurityDevicesModule,
+    RateLimitModule,
+  ],
   controllers: [AuthController],
   providers: [
     LoginUseCase,

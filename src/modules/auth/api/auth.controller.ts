@@ -34,6 +34,7 @@ import { RegistrationEmailResendingInputDto } from './input-dto/registration-ema
 import { RegistrationEmailResendingCommand } from '../application/usecases/registration-email-resending.usecase';
 import { RefreshTokenCommand } from '../application/usecases/refresh-token.usecase';
 import { LogoutCommand } from '../application/usecases/logout.usecase';
+import { RateLimitGuard } from '../../rate-limit/guards/rate-limit.guard';
 
 type RequestWithUser = Request & {
   user?: { userId: string };
@@ -72,16 +73,21 @@ export class AuthController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(RateLimitGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginInputDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
+    const ip = req.ip || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown agent';
+
     const result = await this.commandBus.execute<
       LoginCommand,
       Result<LoginType>
-    >(new LoginCommand(dto));
+    >(new LoginCommand(dto, ip, userAgent));
 
     if (result.status === ResultStatus.BadRequest) {
       throw new BadRequestException(result.extensions);
@@ -105,6 +111,7 @@ export class AuthController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(RateLimitGuard)
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() dto: RegistrationInputDto) {
@@ -124,6 +131,7 @@ export class AuthController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(RateLimitGuard)
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(
@@ -145,6 +153,7 @@ export class AuthController {
     throw new InternalServerErrorException();
   }
 
+  @UseGuards(RateLimitGuard)
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(

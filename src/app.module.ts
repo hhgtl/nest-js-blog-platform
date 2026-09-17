@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CommentsModule } from './modules/comments/comments.module';
+import { SecurityDevicesModule } from './modules/security-devices/security-devices.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CommentsModule } from './modules/comments/comments.module';
     UserModule,
     AuthModule,
     CommentsModule,
+    SecurityDevicesModule,
     TestingModule,
   ],
   controllers: [AppController],

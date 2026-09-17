@@ -10,6 +10,7 @@ import {
 } from '../../constants/auth.constants';
 import { LoginType } from './login.usecase';
 import { Types } from 'mongoose';
+import { SecurityDevicesRepository } from '../../../security-devices/infrastructure/security-devices.repository';
 
 export class RefreshTokenCommand {
   constructor(public refreshToken: string) {}
@@ -23,6 +24,7 @@ export class RefreshTokenUseCase implements ICommandHandler<
   constructor(
     private userRepository: UserRepository,
     private jwtRefreshBlackListRepository: JwtRefreshBlackListRepository,
+    private securityDevicesRepository: SecurityDevicesRepository,
   ) {}
 
   async execute({
@@ -49,6 +51,18 @@ export class RefreshTokenUseCase implements ICommandHandler<
       };
     }
 
+    const session = await this.securityDevicesRepository.findSessionByDeviceId(
+      payload.deviceId,
+    );
+
+    if (!session || session.iat !== payload.iat) {
+      return {
+        status: ResultStatus.Unauthorized,
+        data: null,
+        extensions: [],
+      };
+    }
+
     const user = await this.userRepository.findUserById(
       new Types.ObjectId(payload.userId),
     );
@@ -67,12 +81,21 @@ export class RefreshTokenUseCase implements ICommandHandler<
 
     const newAccessToken = jwtAdapter.createToken({
       userId,
+      deviceId: session.deviceId,
       expiresIn: accessTokenExpirationForTest,
     });
     const newRefreshToken = jwtAdapter.createToken({
       userId,
+      deviceId: session.deviceId,
       expiresIn: refreshTokenExpirationForTest,
     });
+
+    const { iat, exp } = jwtAdapter.decodeToken(newRefreshToken);
+
+    session.iat = iat;
+    session.exp = exp;
+    session.lastActiveDate = new Date().toISOString();
+    await this.securityDevicesRepository.save(session);
 
     return {
       status: ResultStatus.Success,
