@@ -6,8 +6,8 @@ import { LoginInputDto } from '../../api/input-dto/login.input-dto';
 import { AuthService } from '../../services/auth-service';
 import { jwtAdapter } from '../../../../core/adapters/jwt-adapter';
 import {
-  accessTokenExpiration,
-  refreshTokenExpiration,
+  accessTokenExpirationForTest,
+  refreshTokenExpirationForTest,
 } from '../../constants/auth.constants';
 
 export type LoginType = { refreshToken: string; accessToken: string };
@@ -45,11 +45,11 @@ export class LoginUseCase implements ICommandHandler<
 
     const accessToken = jwtAdapter.createToken({
       userId,
-      expiresIn: accessTokenExpiration,
+      expiresIn: accessTokenExpirationForTest,
     });
     const refreshToken = jwtAdapter.createToken({
       userId,
-      expiresIn: refreshTokenExpiration,
+      expiresIn: refreshTokenExpirationForTest,
     });
 
     return {

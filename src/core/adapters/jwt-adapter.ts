@@ -1,4 +1,5 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
+import { randomUUID } from 'crypto';
 
 const SECRET = 'MY_SECRET_PASSWORD';
 
@@ -10,7 +11,7 @@ export const jwtAdapter = {
     userId: string;
     expiresIn?: SignOptions['expiresIn'];
   }) {
-    return jwt.sign({ userId }, SECRET, { expiresIn });
+    return jwt.sign({ userId }, SECRET, { expiresIn, jwtid: randomUUID() });
   },
 
   verifyToken(token: string) {

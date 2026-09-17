@@ -28,6 +28,12 @@ export class UserRepository {
     });
   }
 
+  async findUserByConfirmationCode(code: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({
+      'emailConfirmation.confirmationCode': code,
+    });
+  }
+
   async createUser(newUser: User): Promise<UserDocument> {
     return this.userModel.create(newUser);
   }
@@ -50,5 +56,9 @@ export class UserRepository {
       errorMessage: '',
       extensions: [],
     };
+  }
+
+  async save(entity: UserDocument) {
+    await entity.save();
   }
 }

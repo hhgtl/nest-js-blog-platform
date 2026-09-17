@@ -1,28 +1,25 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ExtensionType, Result } from '../../../../core/types/result';
-import { InjectModel } from '@nestjs/mongoose';
-import { User } from '../../../user/domain/user.entity';
-import { UserViewDto } from '../../api/view-dto/user.view-dto';
-import { CreateUserDto } from '../../dto/user.dto';
-import { type UserModelType } from '../../domain/user.entity';
-import { UserRepository } from '../../infrastructure/user.repository';
+import { CreateUserDto } from '../../../user/dto/user.dto';
+import { UserRepository } from '../../../user/infrastructure/user.repository';
 import { ResultStatus } from '../../../../core/types/result-code';
 import { bcryptService } from '../../../../core/services/hash-service';
 import { randomUUID } from 'crypto';
 import { addHours } from 'date-fns';
+import { nodemailerAdapter } from '../../../../core/adapters/nodemailer-adapter';
 
-export class CreatUserCommand {
+export class RegistrationCommand {
   constructor(public dto: CreateUserDto) {}
 }
 
-@CommandHandler(CreatUserCommand)
-export class CreateUserUseCase implements ICommandHandler<
-  CreatUserCommand,
-  Result<UserViewDto>
+@CommandHandler(RegistrationCommand)
+export class RegistrationUseCase implements ICommandHandler<
+  RegistrationCommand,
+  Result<null>
 > {
   constructor(private userRepository: UserRepository) {}
 
-  async execute({ dto }: CreatUserCommand): Promise<Result<UserViewDto>> {
+  async execute({ dto }: RegistrationCommand): Promise<Result<null>> {
     const errorMessages: ExtensionType[] = [];
     const { email, password, login } = dto;
 
@@ -47,24 +44,30 @@ export class CreateUserUseCase implements ICommandHandler<
 
     const hashedPassword = await bcryptService.generateHash(password);
 
+    const confirmationCode = randomUUID();
+
     const newUser = {
       email: email.toLowerCase(),
       password: hashedPassword,
       login,
       createdAt: new Date(),
       emailConfirmation: {
-        confirmationCode: randomUUID(),
+        confirmationCode,
         confirmationCodeExpirationDate: addHours(new Date(), 12),
-        isConfirmed: true,
+        isConfirmed: false,
       },
     };
 
-    const user = await this.userRepository.createUser(newUser);
+    await this.userRepository.createUser(newUser);
+
+    nodemailerAdapter
+      .sendEmail({ email, confirmationCode })
+      .catch(console.error);
 
     return {
       status: ResultStatus.Success,
-      extensions: errorMessages,
-      data: UserViewDto.mapToView(user),
+      data: null,
+      extensions: [],
     };
   }
 }
