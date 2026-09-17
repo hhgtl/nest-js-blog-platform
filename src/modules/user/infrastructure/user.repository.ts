@@ -34,6 +34,12 @@ export class UserRepository {
     });
   }
 
+  async findUserByRecoveryCode(code: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({
+      'passwordRecovery.recoveryCode': code,
+    });
+  }
+
   async createUser(newUser: User): Promise<UserDocument> {
     return this.userModel.create(newUser);
   }

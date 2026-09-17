@@ -35,6 +35,10 @@ import { RegistrationEmailResendingCommand } from '../application/usecases/regis
 import { RefreshTokenCommand } from '../application/usecases/refresh-token.usecase';
 import { LogoutCommand } from '../application/usecases/logout.usecase';
 import { RateLimitGuard } from '../../rate-limit/guards/rate-limit.guard';
+import { PasswordRecoveryInputDto } from './input-dto/password-recovery.input-dto';
+import { PasswordRecoveryCommand } from '../application/usecases/password-recovery.usecase';
+import { NewPasswordInputDto } from './input-dto/new-password.input-dto';
+import { NewPasswordCommand } from '../application/usecases/new-password.usecase';
 
 type RequestWithUser = Request & {
   user?: { userId: string };
@@ -163,6 +167,42 @@ export class AuthController {
       RegistrationEmailResendingCommand,
       Result<null>
     >(new RegistrationEmailResendingCommand(dto));
+
+    if (result.status === ResultStatus.BadRequest) {
+      throw new BadRequestException({ errorsMessages: result.extensions });
+    }
+
+    if (result.status === ResultStatus.Success) {
+      return;
+    }
+
+    throw new InternalServerErrorException();
+  }
+
+  @UseGuards(RateLimitGuard)
+  @Post('password-recovery')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async passwordRecovery(@Body() dto: PasswordRecoveryInputDto) {
+    const result = await this.commandBus.execute<
+      PasswordRecoveryCommand,
+      Result<null>
+    >(new PasswordRecoveryCommand(dto));
+
+    if (result.status === ResultStatus.Success) {
+      return;
+    }
+
+    throw new InternalServerErrorException();
+  }
+
+  @UseGuards(RateLimitGuard)
+  @Post('new-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async newPassword(@Body() dto: NewPasswordInputDto) {
+    const result = await this.commandBus.execute<
+      NewPasswordCommand,
+      Result<null>
+    >(new NewPasswordCommand(dto));
 
     if (result.status === ResultStatus.BadRequest) {
       throw new BadRequestException({ errorsMessages: result.extensions });

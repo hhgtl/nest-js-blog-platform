@@ -10,3 +10,12 @@ export class RegistrationConfirmationDto {
 export class RegistrationEmailResendingDto {
   email: string;
 }
+
+export class PasswordRecoveryDto {
+  email: string;
+}
+
+export class NewPasswordDto {
+  newPassword: string;
+  recoveryCode: string;
+}

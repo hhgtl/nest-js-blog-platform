@@ -13,6 +13,15 @@ export class EmailConfirmation {
   isConfirmed: boolean;
 }
 
+@Schema({ _id: false })
+export class PasswordRecovery {
+  @Prop({ required: true })
+  recoveryCode: string;
+
+  @Prop({ required: true })
+  recoveryCodeExpirationDate: Date;
+}
+
 @Schema()
 export class User {
   @Prop({ required: true })
@@ -29,6 +38,9 @@ export class User {
 
   @Prop({ required: true, type: EmailConfirmation })
   emailConfirmation: EmailConfirmation;
+
+  @Prop({ type: PasswordRecovery })
+  passwordRecovery?: PasswordRecovery;
 }
 
 export type UserDocument = HydratedDocument<User>;

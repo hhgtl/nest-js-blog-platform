@@ -10,6 +10,8 @@ import { RegistrationConfirmationUseCase } from './application/usecases/registra
 import { RegistrationEmailResendingUseCase } from './application/usecases/registration-email-resending.usecase';
 import { RefreshTokenUseCase } from './application/usecases/refresh-token.usecase';
 import { LogoutUseCase } from './application/usecases/logout.usecase';
+import { PasswordRecoveryUseCase } from './application/usecases/password-recovery.usecase';
+import { NewPasswordUseCase } from './application/usecases/new-password.usecase';
 import { SecurityDevicesModule } from '../security-devices/security-devices.module';
 import { RateLimitModule } from '../rate-limit/rate-limit.module';
 
@@ -30,6 +32,8 @@ import { RateLimitModule } from '../rate-limit/rate-limit.module';
     RegistrationEmailResendingUseCase,
     RefreshTokenUseCase,
     LogoutUseCase,
+    PasswordRecoveryUseCase,
+    NewPasswordUseCase,
   ],
   exports: [],
 })
